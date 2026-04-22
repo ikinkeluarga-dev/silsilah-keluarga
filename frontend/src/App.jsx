@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./App.css";
 
 export default function App() {
   const [members, setMembers] = useState([
@@ -16,35 +17,34 @@ export default function App() {
 
     setMembers([
       ...members,
-      {
-        id: Date.now(),
-        name,
-        parent: Number(parentId),
-      },
+      { id: Date.now(), name, parent: Number(parentId) },
     ]);
 
     setName("");
   };
 
   const renderTree = (parent) => {
-    return members
-      .filter((m) => m.parent === parent)
-      .map((m) => (
-        <div key={m.id} style={styles.node}>
-          <div style={styles.box}>👤 {m.name}</div>
-          <div style={styles.children}>
-            {renderTree(m.id)}
-          </div>
-        </div>
-      ));
+    const children = members.filter((m) => m.parent === parent);
+
+    if (children.length === 0) return null;
+
+    return (
+      <ul>
+        {children.map((child) => (
+          <li key={child.id}>
+            <div className="node">{child.name}</div>
+            {renderTree(child.id)}
+          </li>
+        ))}
+      </ul>
+    );
   };
 
   return (
-    <div style={styles.container}>
+    <div className="container">
       <h1>Silsilah Keluarga</h1>
 
-      {/* FORM TAMBAH */}
-      <div style={styles.form}>
+      <div className="form">
         <input
           placeholder="Nama"
           value={name}
@@ -66,39 +66,7 @@ export default function App() {
         <button onClick={addMember}>Tambah</button>
       </div>
 
-      {/* TREE */}
-      <div style={styles.tree}>
-        {renderTree(null)}
-      </div>
+      <div className="tree">{renderTree(null)}</div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    textAlign: "center",
-    padding: "20px",
-  },
-  form: {
-    marginBottom: "20px",
-  },
-  tree: {
-    display: "flex",
-    justifyContent: "center",
-  },
-  node: {
-    margin: "10px",
-    textAlign: "center",
-  },
-  box: {
-    padding: "10px",
-    background: "#4f46e5",
-    color: "white",
-    borderRadius: "8px",
-  },
-  children: {
-    marginTop: "10px",
-    paddingLeft: "20px",
-    borderLeft: "2px solid #ccc",
-  },
-};
