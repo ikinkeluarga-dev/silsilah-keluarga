@@ -1,4 +1,8 @@
+import mongoose from "mongoose";
 
+mongoose.connect("mongodb+srv://ikinkeluarga_db_user:5AHfhrTHe0Afi3p2@silsilah-cluster.m8ccpwm.mongodb.net/?appName=silsilah-cluster")
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
 const express = require('express');
 const cors = require('cors');
 
