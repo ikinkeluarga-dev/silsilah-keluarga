@@ -13,9 +13,13 @@ mongoose.connect("mongodb+srv://ikinkeluarga_db_user:5AHfhrTHe0Afi3p2@silsilah-c
 const { Schema, model } = mongoose;
 
 // ================= MODEL =================
-const Post = model("Post", new Schema({
-  text: String,
-  likes: { type: Number, default: 0 }
+const Family = model("Family", new Schema({
+  name: String,
+  gender: String,
+  parentId: String,
+  spouseId: String,
+  order: Number,
+  status: { type: String, default: "hidup" }
 }));
 
 const Family = model("Family", new Schema({
@@ -64,3 +68,35 @@ app.post('/api/family', async (req,res)=>{
 
 // ================= START =================
 app.listen(5000, ()=> console.log("Server running on 5000"));
+
+// ================= 🔹 Tambah anggota keluarga ===
+app.post('/api/family', async (req,res)=>{
+  const m = await Family.create(req.body);
+  res.json(m);
+});
+
+//================ 🔹 Ambil semua data keluarga =========
+app.get('/api/family', async (req,res)=>{
+  const data = await Family.find();
+  res.json(data);
+});
+
+//======== 🔹 Update pasangan (nikah) =====
+app.put('/api/family/marry/:id', async (req,res)=>{
+  const { spouseId } = req.body;
+
+  await Family.findByIdAndUpdate(req.params.id, { spouseId });
+  await Family.findByIdAndUpdate(spouseId, { spouseId: req.params.id });
+
+  res.send("married");
+});
+
+//========= 🔹 Update status (almarhum) =======
+app.put('/api/family/status/:id', async (req,res)=>{
+  await Family.findByIdAndUpdate(req.params.id, {
+    status: req.body.status
+  });
+  res.send("updated");
+});
+
+
