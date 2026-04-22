@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api" // nanti kita ganti ke online
+  baseURL: "http://localhost:5000/api"
 });
 
 export default function App() {
@@ -19,17 +19,22 @@ export default function App() {
   }, []);
 
   // ================= LOAD FAMILY =================
-  useEffect(()=>{
-    if(user) loadFamily();
-  },[user]);
+  useEffect(() => {
+    if (user) loadFamily();
+  }, [user]);
 
-  const loadFamily = async ()=>{
-    const r = await api.get('/family');
-    setFamily(r.data);
+  const loadFamily = async () => {
+    try {
+      const r = await api.get("/family");
+      setFamily(r.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const addFamily = async ()=>{
-    await api.post('/family', { name });
+  const addFamily = async () => {
+    if (!name) return;
+    await api.post("/family", { name });
     setName("");
     loadFamily();
   };
@@ -37,7 +42,11 @@ export default function App() {
   // ================= AUTH =================
   const login = (email, password) => {
     const savedUser = JSON.parse(localStorage.getItem("account"));
-    if (savedUser && savedUser.email === email && savedUser.password === password) {
+    if (
+      savedUser &&
+      savedUser.email === email &&
+      savedUser.password === password
+    ) {
       localStorage.setItem("user", JSON.stringify(savedUser));
       setUser(savedUser);
     } else {
@@ -71,15 +80,19 @@ export default function App() {
       <h1>Halo, {user.name}</h1>
 
       <h2>Keluarga</h2>
-      <input value={name} onChange={e=>setName(e.target.value)} />
+
+      <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Nama anggota"
+      />
       <button onClick={addFamily}>Tambah</button>
 
-      {family.map(f=>(
-        <div key={f._id}>
-          👤 {f.name} ({f.status})
-        </div>
+      {family.map((f) => (
+        <div key={f._id}>👤 {f.name}</div>
       ))}
 
+      <br />
       <button onClick={logout}>Logout</button>
     </div>
   );
@@ -94,9 +107,15 @@ function Login({ onLogin, onSwitch }) {
     <div style={styles.box}>
       <h2>Login</h2>
       <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <input placeholder="Password" type="password" onChange={(e) => setPassword(e.target.value)} />
+      <input
+        placeholder="Password"
+        type="password"
+        onChange={(e) => setPassword(e.target.value)}
+      />
       <button onClick={() => onLogin(email, password)}>Login</button>
-      <p onClick={onSwitch} style={styles.link}>Belum punya akun? Register</p>
+      <p onClick={onSwitch} style={styles.link}>
+        Belum punya akun? Register
+      </p>
     </div>
   );
 }
@@ -112,9 +131,17 @@ function Register({ onRegister, onSwitch }) {
       <h2>Register</h2>
       <input placeholder="Nama" onChange={(e) => setName(e.target.value)} />
       <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <input placeholder="Password" type="password" onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={() => onRegister(name, email, password)}>Daftar</button>
-      <p onClick={onSwitch} style={styles.link}>Sudah punya akun? Login</p>
+      <input
+        placeholder="Password"
+        type="password"
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button onClick={() => onRegister(name, email, password)}>
+        Daftar
+      </button>
+      <p onClick={onSwitch} style={styles.link}>
+        Sudah punya akun? Login
+      </p>
     </div>
   );
 }
