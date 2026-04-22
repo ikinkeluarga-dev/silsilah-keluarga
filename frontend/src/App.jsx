@@ -1,6 +1,28 @@
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://localhost:5000/api"
+});
 import { useState, useEffect } from "react";
 
 export default function App() {
+  const [family, setFamily] = useState([]);
+const [name, setName] = useState("");
+
+const loadFamily = async ()=>{
+  const r = await api.get('/family');
+  setFamily(r.data);
+};
+
+const addFamily = async ()=>{
+  await api.post('/family', { name });
+  setName("");
+  loadFamily();
+};
+
+useEffect(()=>{
+  if(user) loadFamily();
+},[user]);
   const [user, setUser] = useState(null);
   const [mode, setMode] = useState("login");
 
@@ -42,6 +64,19 @@ export default function App() {
   return (
     <div style={{ padding: 20 }}>
       <h1>Halo, {user.name}</h1>
+      <h2>Keluarga</h2>
+
+<input 
+  value={name} 
+  onChange={e=>setName(e.target.value)} 
+/>
+<button onClick={addFamily}>Tambah</button>
+
+{family.map(f=>(
+  <div key={f._id}>
+    👤 {f.name} ({f.status})
+  </div>
+))}
       <button onClick={logout}>Logout</button>
 
       <h2>Masuk ke aplikasi Silsilah 👇</h2>
@@ -104,16 +139,3 @@ const loadFamily = async ()=>{
   setFamily(r.data);
 };
 
-const addFamily = async ()=>{
-  await api.post('/family', {
-    name,
-    gender:"L",
-    order:1
-  });
-  setName("");
-  loadFamily();
-};
-
-useEffect(()=>{
-  loadFamily();
-},[]);
