@@ -1,68 +1,17 @@
-.container {
-  text-align: center;
-  padding: 20px;
-}
-
-.form {
-  margin-bottom: 20px;
-}
-
-/* TREE STRUCTURE */
-.tree ul {
-  padding-top: 20px;
-  position: relative;
+.couple {
   display: flex;
+  gap: 10px;
   justify-content: center;
 }
 
-.tree li {
-  list-style-type: none;
+.children {
+  margin-top: 20px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.nodeWrapper {
   text-align: center;
-  position: relative;
-  padding: 20px 10px 0 10px;
-}
-
-/* garis horizontal */
-.tree li::before,
-.tree li::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 50%;
-  border-top: 2px solid #ccc;
-  width: 50%;
-  height: 20px;
-}
-
-.tree li::after {
-  right: auto;
-  left: 50%;
-  border-left: 2px solid #ccc;
-}
-
-/* hapus garis kalau anak tunggal */
-.tree li:only-child::before,
-.tree li:only-child::after {
-  display: none;
-}
-
-/* garis vertikal */
-.tree ul ul::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  border-left: 2px solid #ccc;
-  width: 0;
-  height: 20px;
-}
-
-/* NODE STYLE */
-.node {
-  border: 2px solid #4f46e5;
-  padding: 10px 15px;
-  display: inline-block;
-  border-radius: 8px;
-  background: white;
-  font-weight: bold;
+  margin: 20px;
 }
