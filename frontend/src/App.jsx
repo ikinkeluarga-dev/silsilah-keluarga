@@ -1,93 +1,104 @@
 import { useState } from "react";
 
 export default function App() {
-  const [post, setPost] = useState("");
-  const [posts, setPosts] = useState([]);
+  const [members, setMembers] = useState([
+    { id: 1, name: "Ayah", parent: null },
+    { id: 2, name: "Ibu", parent: 1 },
+    { id: 3, name: "Anak 1", parent: 2 },
+    { id: 4, name: "Anak 2", parent: 2 },
+  ]);
 
-  const addPost = () => {
-    if (!post) return;
-    setPosts([{ text: post }, ...posts]);
-    setPost("");
+  const [name, setName] = useState("");
+  const [parentId, setParentId] = useState("");
+
+  const addMember = () => {
+    if (!name || !parentId) return;
+
+    setMembers([
+      ...members,
+      {
+        id: Date.now(),
+        name,
+        parent: Number(parentId),
+      },
+    ]);
+
+    setName("");
+  };
+
+  const renderTree = (parent) => {
+    return members
+      .filter((m) => m.parent === parent)
+      .map((m) => (
+        <div key={m.id} style={styles.node}>
+          <div style={styles.box}>👤 {m.name}</div>
+          <div style={styles.children}>
+            {renderTree(m.id)}
+          </div>
+        </div>
+      ));
   };
 
   return (
-    <div>
-      {/* NAVBAR */}
-      <div style={styles.navbar}>
-        <h2>SilsilahKeluarga</h2>
+    <div style={styles.container}>
+      <h1>Silsilah Keluarga</h1>
+
+      {/* FORM TAMBAH */}
+      <div style={styles.form}>
+        <input
+          placeholder="Nama"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+
+        <select
+          value={parentId}
+          onChange={(e) => setParentId(e.target.value)}
+        >
+          <option value="">Pilih Orang Tua</option>
+          {members.map((m) => (
+            <option key={m.id} value={m.id}>
+              {m.name}
+            </option>
+          ))}
+        </select>
+
+        <button onClick={addMember}>Tambah</button>
       </div>
 
-      <div style={styles.container}>
-        {/* SIDEBAR */}
-        <div style={styles.sidebar}>
-          <p>🏠 Beranda</p>
-          <p>🌳 Silsilah</p>
-          <p>👥 Teman</p>
-          <p>⚙️ Pengaturan</p>
-        </div>
-
-        {/* FEED */}
-        <div style={styles.feed}>
-          <h3>Buat Postingan</h3>
-
-          <div style={styles.card}>
-            <input
-              value={post}
-              onChange={(e) => setPost(e.target.value)}
-              placeholder="Tulis sesuatu..."
-              style={styles.input}
-            />
-            <button onClick={addPost} style={styles.button}>
-              Posting
-            </button>
-          </div>
-
-          <h3>Postingan</h3>
-          {posts.map((p, i) => (
-            <div key={i} style={styles.post}>
-              👤 {p.text}
-            </div>
-          ))}
-        </div>
+      {/* TREE */}
+      <div style={styles.tree}>
+        {renderTree(null)}
       </div>
     </div>
   );
 }
 
 const styles = {
-  navbar: {
-    background: "#4f46e5",
-    color: "white",
-    padding: "15px",
-    textAlign: "center",
-  },
   container: {
-    display: "flex",
-  },
-  sidebar: {
-    width: "200px",
-    background: "#f3f4f6",
-    padding: "20px",
-    height: "100vh",
-  },
-  feed: {
-    flex: 1,
+    textAlign: "center",
     padding: "20px",
   },
-  card: {
+  form: {
     marginBottom: "20px",
   },
-  input: {
-    padding: "10px",
-    width: "70%",
-    marginRight: "10px",
+  tree: {
+    display: "flex",
+    justifyContent: "center",
   },
-  button: {
-    padding: "10px",
-    cursor: "pointer",
+  node: {
+    margin: "10px",
+    textAlign: "center",
   },
-  post: {
+  box: {
     padding: "10px",
-    borderBottom: "1px solid #ddd",
+    background: "#4f46e5",
+    color: "white",
+    borderRadius: "8px",
+  },
+  children: {
+    marginTop: "10px",
+    paddingLeft: "20px",
+    borderLeft: "2px solid #ccc",
   },
 };
