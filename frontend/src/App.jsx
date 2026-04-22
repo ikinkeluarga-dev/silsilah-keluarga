@@ -94,3 +94,26 @@ const styles = {
     cursor: "pointer",
   },
 };
+
+
+const [family, setFamily] = useState([]);
+const [name, setName] = useState("");
+
+const loadFamily = async ()=>{
+  const r = await api.get('/family');
+  setFamily(r.data);
+};
+
+const addFamily = async ()=>{
+  await api.post('/family', {
+    name,
+    gender:"L",
+    order:1
+  });
+  setName("");
+  loadFamily();
+};
+
+useEffect(()=>{
+  loadFamily();
+},[]);
