@@ -1,69 +1,92 @@
 import { useState } from "react";
 
 export default function App() {
-  const [name, setName] = useState("");
-  const [members, setMembers] = useState([]);
+  const [post, setPost] = useState("");
+  const [posts, setPosts] = useState([]);
 
-  const addMember = () => {
-    if (!name) return;
-    setMembers([...members, name]);
-    setName("");
+  const addPost = () => {
+    if (!post) return;
+    setPosts([{ text: post }, ...posts]);
+    setPost("");
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Silsilah Keluarga</h1>
-
-      <div style={styles.card}>
-        <input
-          type="text"
-          placeholder="Masukkan nama..."
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={styles.input}
-        />
-        <button onClick={addMember} style={styles.button}>
-          Tambah
-        </button>
+    <div>
+      {/* NAVBAR */}
+      <div style={styles.navbar}>
+        <h2>SilsilahKeluarga</h2>
       </div>
 
-      <div style={styles.list}>
-        {members.map((m, i) => (
-          <div key={i} style={styles.item}>
-            👤 {m}
+      <div style={styles.container}>
+        {/* SIDEBAR */}
+        <div style={styles.sidebar}>
+          <p>🏠 Beranda</p>
+          <p>🌳 Silsilah</p>
+          <p>👥 Teman</p>
+          <p>⚙️ Pengaturan</p>
+        </div>
+
+        {/* FEED */}
+        <div style={styles.feed}>
+          <h3>Buat Postingan</h3>
+
+          <div style={styles.card}>
+            <input
+              value={post}
+              onChange={(e) => setPost(e.target.value)}
+              placeholder="Tulis sesuatu..."
+              style={styles.input}
+            />
+            <button onClick={addPost} style={styles.button}>
+              Posting
+            </button>
           </div>
-        ))}
+
+          <h3>Postingan</h3>
+          {posts.map((p, i) => (
+            <div key={i} style={styles.post}>
+              👤 {p.text}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
 const styles = {
-  container: {
-    padding: "40px",
-    fontFamily: "Arial",
+  navbar: {
+    background: "#4f46e5",
+    color: "white",
+    padding: "15px",
     textAlign: "center",
   },
-  title: {
-    fontSize: "32px",
-    marginBottom: "20px",
+  container: {
+    display: "flex",
+  },
+  sidebar: {
+    width: "200px",
+    background: "#f3f4f6",
+    padding: "20px",
+    height: "100vh",
+  },
+  feed: {
+    flex: 1,
+    padding: "20px",
   },
   card: {
     marginBottom: "20px",
   },
   input: {
     padding: "10px",
-    width: "200px",
+    width: "70%",
     marginRight: "10px",
   },
   button: {
-    padding: "10px 15px",
+    padding: "10px",
     cursor: "pointer",
   },
-  list: {
-    marginTop: "20px",
-  },
-  item: {
+  post: {
     padding: "10px",
     borderBottom: "1px solid #ddd",
   },
