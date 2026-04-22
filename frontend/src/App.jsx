@@ -1,94 +1,96 @@
-import { useState } from "react";
-import "./App.css";
+import { useState, useEffect } from "react";
 
 export default function App() {
-  const [members, setMembers] = useState([
-    {
-      id: 1,
-      name: "Bapak",
-      gender: "L",
-      fatherId: null,
-      motherId: null,
-      spouseIds: [2],
-      status: "hidup",
-      photo: "https://i.pravatar.cc/100?img=1",
-    },
-    {
-      id: 2,
-      name: "Ibu",
-      gender: "P",
-      fatherId: null,
-      motherId: null,
-      spouseIds: [1],
-      status: "hidup",
-      photo: "https://i.pravatar.cc/100?img=2",
-    },
-    {
-      id: 3,
-      name: "Anak 1",
-      gender: "L",
-      fatherId: 1,
-      motherId: 2,
-      spouseIds: [],
-      status: "hidup",
-      photo: "https://i.pravatar.cc/100?img=3",
-    },
-  ]);
+  const [user, setUser] = useState(null);
+  const [mode, setMode] = useState("login");
 
-  const renderChildren = (fatherId, motherId) => {
-    return members.filter(
-      (m) => m.fatherId === fatherId && m.motherId === motherId
-    );
+  useEffect(() => {
+    const saved = localStorage.getItem("user");
+    if (saved) setUser(JSON.parse(saved));
+  }, []);
+
+  const login = (email, password) => {
+    const savedUser = JSON.parse(localStorage.getItem("account"));
+    if (savedUser && savedUser.email === email && savedUser.password === password) {
+      localStorage.setItem("user", JSON.stringify(savedUser));
+      setUser(savedUser);
+    } else {
+      alert("Login gagal");
+    }
   };
 
-  const renderTree = (person) => {
-    if (!person) return null;
-
-    const spouses = members.filter((m) =>
-      person.spouseIds.includes(m.id)
-    );
-
-    const children = renderChildren(person.id, spouses[0]?.id);
-
-    return (
-      <div className="nodeWrapper">
-        {/* PASANGAN */}
-        <div className="couple">
-          <Card person={person} />
-          {spouses.map((s) => (
-            <Card key={s.id} person={s} />
-          ))}
-        </div>
-
-        {/* ANAK */}
-        {children.length > 0 && (
-          <div className="children">
-            {children.map((c) => (
-              <div key={c.id}>{renderTree(c)}</div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
+  const register = (name, email, password) => {
+    const newUser = { name, email, password };
+    localStorage.setItem("account", JSON.stringify(newUser));
+    alert("Register berhasil");
+    setMode("login");
   };
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+  };
+
+  if (!user) {
+    return mode === "login" ? (
+      <Login onLogin={login} onSwitch={() => setMode("register")} />
+    ) : (
+      <Register onRegister={register} onSwitch={() => setMode("login")} />
+    );
+  }
 
   return (
-    <div className="container">
-      <h1>Silsilah Keluarga</h1>
-      {renderTree(members[0])}
+    <div style={{ padding: 20 }}>
+      <h1>Halo, {user.name}</h1>
+      <button onClick={logout}>Logout</button>
+
+      <h2>Masuk ke aplikasi Silsilah 👇</h2>
     </div>
   );
 }
 
-function Card({ person }) {
+function Login({ onLogin, onSwitch }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   return (
-    <div className="card">
-      <img src={person.photo} alt="" />
-      <h4>{person.name}</h4>
-      <p>{person.gender === "L" ? "👨" : "👩"}</p>
-      <p style={{ color: person.status === "almarhum" ? "red" : "green" }}>
-        {person.status}
-      </p>
+    <div style={styles.box}>
+      <h2>Login</h2>
+      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+      <input placeholder="Password" type="password" onChange={(e) => setPassword(e.target.value)} />
+      <button onClick={() => onLogin(email, password)}>Login</button>
+      <p onClick={onSwitch} style={styles.link}>Belum punya akun? Register</p>
     </div>
   );
 }
+
+function Register({ onRegister, onSwitch }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  return (
+    <div style={styles.box}>
+      <h2>Register</h2>
+      <input placeholder="Nama" onChange={(e) => setName(e.target.value)} />
+      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+      <input placeholder="Password" type="password" onChange={(e) => setPassword(e.target.value)} />
+      <button onClick={() => onRegister(name, email, password)}>Daftar</button>
+      <p onClick={onSwitch} style={styles.link}>Sudah punya akun? Login</p>
+    </div>
+  );
+}
+
+const styles = {
+  box: {
+    maxWidth: 300,
+    margin: "100px auto",
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+  },
+  link: {
+    color: "blue",
+    cursor: "pointer",
+  },
+};
